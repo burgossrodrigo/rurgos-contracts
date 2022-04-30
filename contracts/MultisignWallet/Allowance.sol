@@ -10,6 +10,10 @@ contract Allowance {
         validateMapping[msg.sender] = true;
     }
 
+    function convertWeiToEther(uint _amountWei) public pure returns(uint) {
+        return _amountWei / 1 ether;
+    }
+
     modifier isAllowed {
         require(validateMapping[msg.sender] == true, "You are not allowed to access such feature");
         _;
@@ -25,27 +29,22 @@ contract Allowance {
 
     function addAllowance(address _who, uint _amount) public isAllowed {
         require(msg.sender != _who, "You cant give allowance to yourself");
-        uint oldAmount = allowance[_who] + _amount;
-        emit allowanceChanged(_who, msg.sender, allowance[_who], oldAmount);
-        allowance[_who] += _amount;
+        emit allowanceChanged(_who, msg.sender, allowance[_who], allowance[_who] + _amount);
+        allowance[_who] = convertWeiToEther(_amount);
     }
 
-        function removeAllowance(address _who, uint _amount) public isAllowed {
+    function removeAllowance(address _who, uint _amount) public isAllowed {
         require(msg.sender != _who, "You cant remove allowance to yourself");
-        uint oldAmount = allowance[_who] - _amount;
-        emit allowanceChanged(_who, msg.sender, allowance[_who], oldAmount);
-        allowance[_who] -= _amount;
+        emit allowanceChanged(_who, msg.sender, allowance[_who], allowance[_who] - _amount);
+        allowance[_who] -= convertWeiToEther(_amount);
     }
-
-
-
-    //@dev return an status of an address
 
     function addressStatus(address _address) public view returns(bool) {
         return validateMapping[_address];
     }
 
-    //@dev modfiers to filter the access of a function
-
+    function addressAllowance(address _address) public view returns(uint){
+        return allowance[_address];
+    }
 
 }

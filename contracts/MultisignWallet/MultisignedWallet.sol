@@ -21,10 +21,6 @@ contract MultigisnedWallet is Allowance, Ownable {
 
     mapping(address => Balance) public balanceReceived;
 
-    function convertWeiToEther(uint _amountWei) public pure returns(uint) {
-        return _amountWei / 1 ether;
-    }
-
     function getBalance() public view returns(uint){
         return address(this).balance;
     }
